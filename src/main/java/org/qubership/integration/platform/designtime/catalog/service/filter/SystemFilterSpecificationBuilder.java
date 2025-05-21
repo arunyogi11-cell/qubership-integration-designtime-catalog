@@ -19,6 +19,7 @@ package org.qubership.integration.platform.designtime.catalog.service.filter;
 import jakarta.persistence.criteria.*;
 import org.qubership.integration.platform.catalog.model.filter.FilterCondition;
 import org.qubership.integration.platform.catalog.model.system.OperationProtocol;
+import org.qubership.integration.platform.catalog.persistence.configs.entity.context.ContextSystem;
 import org.qubership.integration.platform.catalog.persistence.configs.entity.system.IntegrationSystem;
 import org.qubership.integration.platform.catalog.service.filter.FilterConditionPredicateBuilderFactory;
 import org.qubership.integration.platform.designtime.catalog.rest.v1.dto.FilterRequestDTO;
@@ -43,6 +44,10 @@ public class SystemFilterSpecificationBuilder {
 
     public Specification<IntegrationSystem> buildFilter(Collection<FilterRequestDTO> filters) {
         return build(filters, CriteriaBuilder::and);
+    }
+
+    public Specification<ContextSystem> buildContextFilter(Collection<FilterRequestDTO> filters) {
+        return buildContextSpec(filters, CriteriaBuilder::and);
     }
 
     public Specification<IntegrationSystem> build(
@@ -98,6 +103,44 @@ public class SystemFilterSpecificationBuilder {
                         ? criteriaBuilder.or(predicate, criteriaBuilder.isNull(getJoin(root, "labels").get("name")))
                         : predicate;
             }
+            default -> throw new IllegalStateException("Unexpected feature value: " + filter.getFeature());
+        };
+    }
+
+    public Specification<ContextSystem> buildContextSpec(
+            Collection<FilterRequestDTO> filters,
+            BiFunction<CriteriaBuilder, Predicate[], Predicate> predicateAccumulator
+    ) {
+        return (root, query, criteriaBuilder) -> {
+            query.distinct(true);
+
+            Predicate commonResult = null;
+            if (!filters.isEmpty()) {
+                Predicate[] predicates = filters.stream()
+                        .map(filter -> buildDatabasePredicate(root, criteriaBuilder, filter))
+                        .toArray(Predicate[]::new);
+
+                commonResult = filters.size() > 1 ?
+                        predicateAccumulator.apply(criteriaBuilder, predicates) :
+                        predicates[0];
+            }
+
+            return commonResult;
+        };
+    }
+
+    private Predicate buildDatabasePredicate(
+            Root<ContextSystem> root,
+            CriteriaBuilder criteriaBuilder,
+            FilterRequestDTO filter
+    ) {
+        var conditionPredicateBuilder = filterConditionPredicateBuilderFactory
+                .<String>getPredicateBuilder(criteriaBuilder, filter.getCondition());
+        String value = filter.getValue();
+        return switch (filter.getFeature()) {
+            case ID -> conditionPredicateBuilder.apply(root.get("id"), value);
+            case NAME -> conditionPredicateBuilder.apply(root.get("name"), value);
+            case CREATED -> conditionPredicateBuilder.apply(root.get("createdWhen"), value);
             default -> throw new IllegalStateException("Unexpected feature value: " + filter.getFeature());
         };
     }
