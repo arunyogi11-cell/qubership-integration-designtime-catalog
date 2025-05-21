@@ -43,7 +43,7 @@ import java.util.UUID;
     public ContextSystem create(ContextSystemRequestDTO requestedContextSystem) {
         requestedContextSystem.setId(UUID.randomUUID().toString());
         ContextSystem createdSystem = contextSystemMapper.toContextSystem(requestedContextSystem);
-        return enrichAndSaveDatabaseSystem(createdSystem, false);
+        return enrichAndSaveContextSystem(createdSystem, false);
     }
 
     public void deleteById(String systemId) {

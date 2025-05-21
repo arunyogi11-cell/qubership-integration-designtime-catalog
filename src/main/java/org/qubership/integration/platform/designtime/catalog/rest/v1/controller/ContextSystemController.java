@@ -52,7 +52,7 @@ public class ContextSystemController {
     @GetMapping("/{contextId}")
     public ResponseEntity<ContextSystemResponseDTO> geContextSystemById(@PathVariable String contextId) {
         if (log.isDebugEnabled()) {
-            log.debug("Request to find database system with id: {}", contextId);
+            log.debug("Request to find context system with id: {}", contextId);
         }
         ContextSystem contextSystem = contextSystemService.findById(contextId);
         ContextSystemResponseDTO response = contextSystemMapper.toContextSystemResponseDTO(contextSystem);

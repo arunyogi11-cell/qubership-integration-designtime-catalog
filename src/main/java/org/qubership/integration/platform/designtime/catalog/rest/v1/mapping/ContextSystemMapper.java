@@ -16,16 +16,16 @@ import org.qubership.integration.platform.designtime.catalog.rest.v1.dto.system.
 )
 public interface ContextSystemMapper {
 
-    List<ContextSystemResponseDTO> toContextSystemResponsesDTOs(List<ContextSystem> databaseSystem);
+    List<ContextSystemResponseDTO> toContextSystemResponsesDTOs(List<ContextSystem> contextSystems);
 
 
-    ContextSystemResponseDTO toContextSystemResponseDTO(ContextSystem databaseSystem);
+    ContextSystemResponseDTO toContextSystemResponseDTO(ContextSystem contextSystem);
 
-    default ContextSystem toContextSystem(ContextSystemRequestDTO requestedDatabaseSystem) {
+    default ContextSystem toContextSystem(ContextSystemRequestDTO requestedContextSystem) {
         return ContextSystem.builder()
-                .id(requestedDatabaseSystem.getId())
-                .name(requestedDatabaseSystem.getName())
-                .description(requestedDatabaseSystem.getDescription())
+                .id(requestedContextSystem.getId())
+                .name(requestedContextSystem.getName())
+                .description(requestedContextSystem.getDescription())
                 .build();
     }
 

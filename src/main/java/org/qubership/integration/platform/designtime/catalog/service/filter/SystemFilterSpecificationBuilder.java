@@ -117,7 +117,7 @@ public class SystemFilterSpecificationBuilder {
             Predicate commonResult = null;
             if (!filters.isEmpty()) {
                 Predicate[] predicates = filters.stream()
-                        .map(filter -> buildDatabasePredicate(root, criteriaBuilder, filter))
+                        .map(filter -> buildContextPredicate(root, criteriaBuilder, filter))
                         .toArray(Predicate[]::new);
 
                 commonResult = filters.size() > 1 ?
@@ -129,7 +129,7 @@ public class SystemFilterSpecificationBuilder {
         };
     }
 
-    private Predicate buildDatabasePredicate(
+    private Predicate buildContextPredicate(
             Root<ContextSystem> root,
             CriteriaBuilder criteriaBuilder,
             FilterRequestDTO filter
