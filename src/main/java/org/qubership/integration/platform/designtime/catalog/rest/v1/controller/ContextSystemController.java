@@ -25,7 +25,7 @@ import java.util.List;
 @ComponentScan
 @RestController
 @CrossOrigin(origins = "*")
-@RequestMapping(value = "/v1/context-systems", produces = MediaType.APPLICATION_JSON_VALUE)
+@RequestMapping(value = "/v1/context-system", produces = MediaType.APPLICATION_JSON_VALUE)
 @Tag(name = "context-system-controller", description = "Context System Controller")
 public class ContextSystemController {
 
