@@ -120,9 +120,9 @@ public class SystemFilterSpecificationBuilder {
                         .map(filter -> buildContextPredicate(root, criteriaBuilder, filter))
                         .toArray(Predicate[]::new);
 
-                commonResult = filters.size() > 1 ?
-                        predicateAccumulator.apply(criteriaBuilder, predicates) :
-                        predicates[0];
+                commonResult = filters.size() > 1
+                        ? predicateAccumulator.apply(criteriaBuilder, predicates)
+                        : predicates[0];
             }
 
             return commonResult;
