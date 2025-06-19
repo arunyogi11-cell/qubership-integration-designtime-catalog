@@ -35,6 +35,7 @@ import org.qubership.integration.platform.catalog.persistence.configs.entity.cha
 import org.qubership.integration.platform.catalog.persistence.configs.repository.chain.*;
 import org.qubership.integration.platform.catalog.service.ActionsLogService;
 import org.qubership.integration.platform.catalog.service.ChainBaseService;
+import org.qubership.integration.platform.catalog.service.ContextBaseService;
 import org.qubership.integration.platform.catalog.util.ChainUtils;
 import org.qubership.integration.platform.catalog.util.ElementUtils;
 import org.qubership.integration.platform.designtime.catalog.configuration.aspect.ChainModification;
@@ -94,6 +95,7 @@ public class ChainService extends ChainBaseService {
                         DependencyRepository dependencyRepository,
                         ChainLabelsRepository chainLabelsRepository,
                         ElementService elementService,
+                        ContextBaseService contextBaseService,
                         FolderService folderService,
                         @Lazy DeploymentService deploymentService,
                         ActionsLogService actionLogger,
@@ -101,7 +103,7 @@ public class ChainService extends ChainBaseService {
                         ChainFilterSpecificationBuilder chainFilterSpecificationBuilder,
                         AuditingHandler jpaAuditingHandler,
                         ChainRuntimePropertiesService chainRuntimePropertiesService) {
-        super(chainRepository, elementService);
+        super(chainRepository, elementService, contextBaseService);
         this.chainLabelsRepository = chainLabelsRepository;
         this.folderService = folderService;
         this.elementService = elementService;

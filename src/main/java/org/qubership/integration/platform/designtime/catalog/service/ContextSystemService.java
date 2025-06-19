@@ -22,12 +22,14 @@ import org.qubership.integration.platform.catalog.persistence.configs.entity.con
 import org.qubership.integration.platform.catalog.persistence.configs.repository.context.ContextSystemRepository;
 import org.qubership.integration.platform.catalog.service.AbstractContextSystemService;
 import org.qubership.integration.platform.catalog.service.ActionsLogService;
+import org.qubership.integration.platform.designtime.catalog.exception.exceptions.SystemDeleteException;
 import org.qubership.integration.platform.designtime.catalog.rest.v1.dto.FilterRequestDTO;
 import org.qubership.integration.platform.designtime.catalog.rest.v1.dto.system.SystemSearchRequestDTO;
 import org.qubership.integration.platform.designtime.catalog.rest.v1.dto.system.context.ContextSystemRequestDTO;
 import org.qubership.integration.platform.designtime.catalog.rest.v1.dto.system.context.ContextSystemUpdateRequestDTO;
 import org.qubership.integration.platform.designtime.catalog.rest.v1.mapping.ContextSystemMapper;
 import org.qubership.integration.platform.designtime.catalog.service.filter.SystemFilterSpecificationBuilder;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -41,17 +43,19 @@ import java.util.UUID;
 
     private final SystemFilterSpecificationBuilder systemFilterSpecificationBuilder;
     private final ContextSystemMapper contextSystemMapper;
+    private final ChainService chainService;
 
     public ContextSystemService(ContextSystemRepository contextSystemRepository,
                                 ContextSystemMapper contextSystemMapper,
                                 ActionsLogService actionLogger,
-                                SystemFilterSpecificationBuilder systemFilterSpecificationBuilder) {
+                                SystemFilterSpecificationBuilder systemFilterSpecificationBuilder, @Lazy ChainService chainService) {
         super(
                 contextSystemRepository,
                 actionLogger
         );
         this.systemFilterSpecificationBuilder = systemFilterSpecificationBuilder;
         this.contextSystemMapper = contextSystemMapper;
+        this.chainService = chainService;
     }
 
 
@@ -61,8 +65,11 @@ import java.util.UUID;
         return enrichAndSaveContextSystem(createdSystem, false);
     }
 
-    public void deleteById(String systemId) {
-        ContextSystem contextSystem = findById(systemId);
+    public void deleteById(String contextId) {
+        if (chainService.isContextusedByChain(contextId)) {
+            throw new SystemDeleteException("Service used by one or more chains");
+        }
+        ContextSystem contextSystem = findById(contextId);
         contextSystemRepository.delete(contextSystem);
         logContextSystemAction(contextSystem, LogOperation.DELETE);
 
